@@ -23,18 +23,24 @@ The Turtlebot3 modified Nav2 parameters are located here: [`/config/nav2_params.
 
 ## Route Justification
 
--
+The route begins in a corner of EERC 722 and moves toward the lab tables, which are designated as keepout zones, satisfying the requirement to pass within 0.5 m of a keepout zone boundary so that inflation and keepout costs actively influence the planned path. The robot then navigates into a tight space near the tables and must turn around, or reverse to escape, producing heading changes well in excess of 45 degrees and making controller behavior during turns (hopefully) clearly visible. After exiting the tight area, the route loops through the open section of the lab, skirting additional keepout zone boundaries before returning to the start. The full loop covers well over 4 meters of travel, and the repeated proximity to keepout zones throughout the loop hopefully garuntees that the costmap's inflation plays a meaningful role in both planner and controller decisions at multiple points along the path.
 
 ## Route Map
 
--
+![Annotated route map with waypoints](figures/waypoints.png)
 
 ## Start and Goal Poses
 
-| | x | y | yaw |
-| :--: | :--: | :--: | :--: |
-| Start |  |  |  |
-| Goal  |  |  |  |
+The route is a loop — the robot visits all 6 waypoints in order and returns to waypoint 0. Waypoints are stored in [`config/waypoints.yaml`](./config/waypoints.yaml).
+
+| Waypoint | x (m) | y (m) | yaw (rad) |
+| :------: | :----: | :----: | :-------: |
+| 0 (start/end) | 3.066 | -4.016 | 1.579 |
+| 1 | 5.003 | -3.008 | 0.030 |
+| 2 | 3.143 | -3.017 | 1.561 |
+| 3 | 2.816 | 0.419 | 3.137 |
+| 4 | -0.580 | 0.230 | -1.548 |
+| 5 | -2.230 | -4.560 | 0.038 |
 
 
 # Part 2 - Planner and Controller Comparison
