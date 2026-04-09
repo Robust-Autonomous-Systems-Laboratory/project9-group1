@@ -94,7 +94,7 @@ controller_server:
     # Regulated Pure Pursuit controller
     RPP:
       plugin: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
-      desired_linear_vel: 0.5
+      desired_linear_vel: 0.18
       lookahead_dist: 0.4
       min_lookahead_dist: 0.3
       max_lookahead_dist: 0.9
@@ -125,7 +125,7 @@ controller_server:
       debug_trajectory_details: false
       min_vel_x: 0.0
       min_vel_y: 0.0
-      max_vel_x: 0.5
+      max_vel_x: 0.18
       max_vel_y: 0.0
       max_vel_theta: 1.0
       min_speed_xy: 0.0
