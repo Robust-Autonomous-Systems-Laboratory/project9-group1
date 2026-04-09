@@ -15,7 +15,7 @@ setup(
     zip_safe=True,
     maintainer='quin',
     maintainer_email='iqmattso@mtu.edu',
-    description='TODO: Package description',
+    description='implements nav2 path planner and path follower params',
     license='Apache-2.0',
     extras_require={
         'test': [
@@ -24,7 +24,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'combinations = project9-group1.run_combinations:main',
+            'combination_node = planner_controller_testing.run_combinations:main'
         ],
     },
 )
