@@ -4,7 +4,6 @@ import rclpy
 from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
 from ament_index_python.packages import get_package_share_directory
-import argparse
 import yaml
 import os
 
@@ -21,30 +20,29 @@ def drift(amcl : PoseWithCovarianceStamped, waypoint : PoseStamped):
     return x_drift, y_drift
 
 def main()->None:
-    # Get args
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--cycles", default=3, type=int)
-    args, other = parser.parse_known_args()
-    cycles = args.cycles
 
-    rclpy.init(args=other)
+    rclpy.init()
     navigator = BasicNavigator()
 
-    # amcl_sub = navigator.create_subscription(
-    #         PoseWithCovarianceStamped,
-    #         '/amcl_pose',
-    #         amcl_cb,
-    #         10)
+    amcl_sub = navigator.create_subscription(
+            PoseWithCovarianceStamped,
+            '/amcl_pose',
+            amcl_cb,
+            10)
 
+
+    # load waypoint file directory from setup file
     pkg_share = get_package_share_directory('planner_controller_testing')
     filepath = os.path.join(pkg_share, 'external', 'waypoints.yaml')
  
+    # load waypoints from project9-group1/config/waypoints.yaml (path given in setup.py)
     with open(filepath, 'r') as file:
         data = yaml.safe_load(file)
         points = data['waypoints']  # need to check format of loaded yaml file!
     
     waypoints = []
 
+    # process yaml to list of PoseStamped() msgs
     for pt in points:
         pose = PoseStamped()
         pose.header.frame_id = 'map'
@@ -55,36 +53,42 @@ def main()->None:
         pose.pose.orientation.w = points[pt]['orientation'][3]
         waypoints.append(pose)
 
-    print(waypoints)
-
+    #print(waypoints)
     
-    # # Wait for the navigation stack to be ready
-    # navigator.get_logger().info("Waiting for Nav2 stack...")
-    # navigator.waitUntilNav2Active()
+    # planner and controller combinations
+    planner_combos = ['Dijkstra', 'AStar', 'AStar']
+    controller_combos = ['RPP', 'RPP', 'DWB']
+    num_combinations = len(planner_combos)
+    
+    # Wait for the navigation stack to be ready
+    navigator.get_logger().info("Waiting for Nav2 stack...")
+    navigator.waitUntilNav2Active()
+    
+    
+    
+    # cycle through all combinations
+    for i in range(num_combinations):
 
- 
-
-    # # Start patrol loop
-    # # task=follow_waypoints_task
-    # for i in range(cycles):
-    #     task = navigator.followWaypoints(waypoints)
-    #     while not navigator.isTaskComplete():
-    #         feedback = navigator.getFeedback()
-    #         navigator.get_logger().info(f"Navigating to waypoint {feedback.current_waypoint}")
-
-    #     result = navigator.getResult();
-    #     if result == TaskResult.SUCCEEDED:
-    #         navigator.get_logger().info('Goal succeeded!')
-    #         # Calculate drift
-    #         x, y = drift(lastPose, waypoints[4])
-    #         navigator.get_logger().info(f"Dift accumulated x: {x}, y: {y}")
-    #     elif result == TaskResult.CANCELED:
-    #         navigator.get_logger().info('Goal was canceled!')
-    #     elif result == TaskResult.FAILED:
-    #         (error_code, error_msg) = navigator.getTaskError()
-    #         navigator.get_logger().error('Goal failed!{error_code}:{error_msg}')
-    #     else:
-    #         navigator.get_logger().error('Goal has an invalid return status!')
+        # use nav.goThroughPoses in lieu of nav.goToPose since our route is a series of poses
+        navigator.goThroughPoses(waypoints, planner_id=planner_combos[i], controller_id=controller_combos[i]) 
+        
+        while not navigator.isTaskComplete():
+            feedback = navigator.getFeedback()
+            navigator.get_logger().info("Navigating to waypoint {feedback.current_waypoint}")
+            
+        result = navigator.getResult()
+        if result == TaskResult.SUCCEEDED:
+            navigator.get_logger().info(f'Goal succeeded using {planner_combos[i]} planner and {controller_combos[i]} controller')
+            # Calculate drift
+            x, y = drift(lastPose, waypoints[4])
+            navigator.get_logger().info(f"Dift accumulated x: {x}, y: {y}")
+        elif result == TaskResult.CANCELED:
+            navigator.get_logger().info('Goal was canceled!')
+        elif result == TaskResult.FAILED:
+            (error_code, error_msg) = navigator.getTaskError()
+            navigator.get_logger().error('Goal failed!{error_code}:{error_msg}')
+        else:
+            navigator.get_logger().error('Goal has an invalid return status!')
         
 
-    # navigator.lifecycleShutdown()
+    navigator.lifecycleShutdown()
