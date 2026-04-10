@@ -62,15 +62,14 @@ def main()->None:
     
     # Wait for the navigation stack to be ready
     navigator.get_logger().info("Waiting for Nav2 stack...")
-    navigator.waitUntilNav2Active()
-    
+    navigator.waitUntilNav2Active(localizer='slam_toolbox')
     
     
     # cycle through all combinations
     for i in range(num_combinations):
 
         # use nav.goThroughPoses in lieu of nav.goToPose since our route is a series of poses
-        navigator.goThroughPoses(waypoints, planner_id=planner_combos[i], controller_id=controller_combos[i]) 
+        navigator.followWaypoints(waypoints, planner_id=planner_combos[i], controller_id=controller_combos[i]) 
         
         while not navigator.isTaskComplete():
             feedback = navigator.getFeedback()

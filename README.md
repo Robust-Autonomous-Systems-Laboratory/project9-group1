@@ -116,7 +116,7 @@ $ ros2 launch turtlebot3_bringup robot.launch.py
 
 ### Terminal 2 — Costmap filter servers (workstation)
 ```bash
-$ ros2 launch src/config/filters_launch.py
+$ ros2 launch src/project9-group1/config/filters_launch.py
 ```
 Wait until you see `Managed nodes are active` before proceeding.
 
@@ -124,8 +124,8 @@ Wait until you see `Managed nodes are active` before proceeding.
 ```bash
 $ ros2 launch turtlebot3_navigation2 navigation2.launch.py \
   use_sim_time:=False \
-  map:=src/maps/map_eerc722.yaml \
-  params_file:=src/config/nav2_params.yaml
+  map:=src/project9-group1/maps/map_eerc722.yaml \
+  params_file:=src/project9-group1/config/nav2_params.yaml
 ```
 
 Once Nav2 is up, use RViz2's **2D Pose Estimate** to initialize AMCL before sending any navigation goals.
