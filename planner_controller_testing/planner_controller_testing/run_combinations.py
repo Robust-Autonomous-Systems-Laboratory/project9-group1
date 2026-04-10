@@ -62,14 +62,17 @@ def main()->None:
     
     # Wait for the navigation stack to be ready
     navigator.get_logger().info("Waiting for Nav2 stack...")
-    navigator.waitUntilNav2Active(localizer='slam_toolbox')
+    navigator.waitUntilNav2Active()
     
     
     # cycle through all combinations
     for i in range(num_combinations):
 
-        # use nav.goThroughPoses in lieu of nav.goToPose since our route is a series of poses
-        navigator.followWaypoints(waypoints, planner_id=planner_combos[i], controller_id=controller_combos[i]) 
+        # navigator.goToPose does not support planner and controller parameters
+        # Instead, getPath()/getPathThroughPoses() must be called first, followed by followPath(), as both support changing algorithms
+        # See API here: https://docs.ros.org/en/iron/p/nav2_simple_commander/
+        path = navigator.getPathThroughPoses(waypoints[0], waypoints[1:len(waypoints)-1], planner_id=planner_combos[i])
+        navigator.followPath(path, controller_id=controller_combos[i])
         
         while not navigator.isTaskComplete():
             feedback = navigator.getFeedback()
