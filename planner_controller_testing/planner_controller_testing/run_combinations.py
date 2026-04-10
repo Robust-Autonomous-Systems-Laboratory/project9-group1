@@ -3,8 +3,10 @@
 import rclpy
 from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
 from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped
+from ament_index_python.packages import get_package_share_directory
 import argparse
 import yaml
+import os
 
 lastPose = None
 
@@ -34,26 +36,25 @@ def main()->None:
     #         amcl_cb,
     #         10)
 
+    pkg_share = get_package_share_directory('planner_controller_testing')
+    filepath = os.path.join(pkg_share, 'external', 'waypoints.yaml')
  
-    with open('./config/waypoints.yaml', 'r') as file:
+    with open(filepath, 'r') as file:
         data = yaml.safe_load(file)
         points = data['waypoints']  # need to check format of loaded yaml file!
-        print(points)
-
+    
     waypoints = []
 
     for pt in points:
-
         pose = PoseStamped()
         pose.header.frame_id = 'map'
         pose.header.stamp = navigator.get_clock().now().to_msg()
-        pose.pose.position.x = pt['pose'][0]
-        pose.pose.position.y = pt['pose'][1]
-        pose.pose.orientation.z = pt['orientation'][0]
-        pose.pose.orientation.w = pt['orientation'][3]
+        pose.pose.position.x = points[pt]['pose'][0]
+        pose.pose.position.y = points[pt]['pose'][1]
+        pose.pose.orientation.z = points[pt]['orientation'][0]
+        pose.pose.orientation.w = points[pt]['orientation'][3]
         waypoints.append(pose)
 
-    print("\n")
     print(waypoints)
 
     

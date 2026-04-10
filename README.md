@@ -142,4 +142,8 @@ ros2 run scripts run_combinations.py
 
 **Ian Mattson**
 
--
+- Google Gemini was used to help generate the syntax to configure a ROS node to access the a parameter file in the repo's `/config` directory outside the ROS 2 package, using the prompt:
+
+  " How to setup a ros2 python node to access parameters in a given directory outside the ros2 package "
+
+  The output was tuned to include our group's specific package name, [`waypoints.yaml`](./config/) and needed to be modified such that it accessed the file outside of the ROS package that used it, per the assignment directory structure.  This was tested and verified to work with minimal modification by testing the node and checking waypoints were properly loaded.

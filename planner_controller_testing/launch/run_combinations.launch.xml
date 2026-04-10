@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="planner_controller_testing" exec="combination_node" name="combo_node" output="screen"/>
+</launch>
