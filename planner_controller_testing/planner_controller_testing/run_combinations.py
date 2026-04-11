@@ -43,11 +43,22 @@ def main()->None:
     # navigator.goToPose does not support planner and controller parameters
     # Instead, getPath()/getPathThroughPoses() must be called first, followed by followPath(), as both support changing algorithms
     # See API here: https://docs.nav2.org/commander_api/index.html
+   
     path = navigator.getPathThroughPoses(waypoints[0], waypoints, planner_id='Dijkstra')
     navigator.followPath(path, controller_id='RPP')
             
     while not navigator.isTaskComplete():
         pass
+    
+    result = navigator.getResult()
+    if result == TaskResult.SUCCEEDED:
+        print('Goal succeeded!')
+    elif result == TaskResult.CANCELED:
+        print('Goal was canceled!')
+    elif result == TaskResult.FAILED:
+        print('Goal failed!')
+    else:
+        print('Goal has an invalid return status!')
     
     navigator.get_logger().info("Starting second combination: A* and RPP")
     path = navigator.getPathThroughPoses(waypoints[0], waypoints, planner_id='AStar')
@@ -56,12 +67,32 @@ def main()->None:
     while not navigator.isTaskComplete():
         pass
     
+    result = navigator.getResult()
+    if result == TaskResult.SUCCEEDED:
+        print('Goal succeeded!')
+    elif result == TaskResult.CANCELED:
+        print('Goal was canceled!')
+    elif result == TaskResult.FAILED:
+        print('Goal failed!')
+    else:
+        print('Goal has an invalid return status!')
+    
     navigator.get_logger().info("Starting third combination: A* and DWB")
     path = navigator.getPathThroughPoses(waypoints[0], waypoints, planner_id='AStar')
     navigator.followPath(path, controller_id='DWB')
             
     while not navigator.isTaskComplete():
         pass
+    
+    result = navigator.getResult()
+    if result == TaskResult.SUCCEEDED:
+        print('Goal succeeded!')
+    elif result == TaskResult.CANCELED:
+        print('Goal was canceled!')
+    elif result == TaskResult.FAILED:
+        print('Goal failed!')
+    else:
+        print('Goal has an invalid return status!')
    
     navigator.get_logger().info("All combinations ended, Node Terminating...")
 

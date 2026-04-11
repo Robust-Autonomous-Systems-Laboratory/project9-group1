@@ -8,11 +8,11 @@ Reid Beckes, Jackson Newell, Ian Mattson, and Anders Smitterberg
 
 This project is completed and tested in ROS2 Jazzy Jalisco on an Ubuntu 24.04 Noble Numbat PC.
 
-Each Turtlebot3 in EERC 722 is assigned a static IP on a lab managed wireless router. Our group used Turtlebot Anchovy, which is assigned local IP address 32.80.100.108 and `ROS_DOMAIN_ID=8`.
+Each Turtlebot3 in EERC 722 is assigned a static IP on a lab managed wireless router. Our group used Turtlebot Tomato, which is assigned local IP address 32.80.100.107 and `ROS_DOMAIN_ID=7`.
 
 The testing environment is setup on a local PC by exporting the following parameter flags:
 ```bash
-$ export ROS_DOMAIN_ID=8
+$ export ROS_DOMAIN_ID=7
 $ export TURTLEBOT3_MODEL=burger
 $ export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 ```
@@ -105,7 +105,7 @@ All commands are run from the workspace root (`proj9_ws/`). Source the workspace
 
 ```bash
 $ export TURTLEBOT3_MODEL=burger
-$ export ROS_DOMAIN_ID=8
+$ export ROS_DOMAIN_ID=7
 $ source install/setup.bash
 ```
 
