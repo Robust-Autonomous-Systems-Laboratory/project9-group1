@@ -62,7 +62,7 @@ def main()->None:
     
     # Wait for the navigation stack to be ready
     navigator.get_logger().info("Waiting for Nav2 stack...")
-    navigator.waitUntilNav2Active(localizer='slam_toolbox')
+    navigator.waitUntilNav2Active(localizer="slam_toolbox")
     
     
     # cycle through all combinations
