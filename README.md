@@ -56,7 +56,9 @@ The route is a loop — the robot visits all 6 waypoints in order and returns to
 
 ## 2a. Planner Comparison (Dijkstra vs. A\*)
 
--
+Between the A* and Dijkstra planners, the paths created were pretty similar. However, at certain points the Dijkstra planner is smoother. At the same points A* looks wavy or noisy. This is probably due to Dijkstra exploring the entire space. A* on the otherhand doesn't explore an entire space.
+
+Other than the noise, the paths are very similar and the waviness of the A* path seems to impact the turtlebot minimally. Therefore, this difference is negligable.
 
 ![Dijkstra](./figures/plan_dijkstra.png)
 
@@ -68,15 +70,16 @@ Figure 3: A* planned route overlaid on costmap
 
 ## 2b. Controller Comparison (RPP vs. DWB)
 
--
+Between the two controllers, in the context of our experiment, there were large differences. The biggest difference being that RPP was able to complete the runs while DWB could not complete the runs. RPP was able to navigate the paths well and only experience poor path following after turning, due to some turns being sharp. DWB was not able to reach the first waypoint and would drive in circles attempting to reach it. The assumption is that the DWB controller acts like a bicycle model. This made it difficult to drive into a waypoint and directly out in the same directon.
+
 
 ## 2c. Run Results Summary
 
 | Run | Planner | Controller | Observations |
 |-----|---------|------------|--------------|
-| 1 | Dijkstra | RPP |  |
-| 2 | A\* | RPP |  |
-| 3 | A\* | DWB |  |
+| 1 | Dijkstra | RPP | Follows the path well. Usually goes off the given path after turning. |
+| 2 | A\* | RPP | Similar to previous observation. No big differences. |
+| 3 | A\* | DWB | Does not complete run. Gets stuck at first waypoint and spins in circles. |
 
 
 # Part 3 - Analysis
@@ -85,11 +88,11 @@ Figure 3: A* planned route overlaid on costmap
 
 **Did Dijkstra and A\* produce identical or different paths?**
 
--
+The two planners created very similar paths. The main difference is that the A* path more noisy and wavy. In turn, the Dijkstra planner made a smoother path. Therefore, the paths were similar but slightly different. 
 
 **Is the straight-line heuristic informative or misleading near the keepout zone boundary?**
 
--
+For the experiment the group carried out, the straight line heuristic was informatve near the keep out zone. A* was able to navigate around the keep out zones successfully and plotted a similar path to the Dijkstra path. If the experiment was altered, there could be scenarios where the heuristic is misleading. One example of this would be if a waypoint is fully behind a keep out zone, instead of just around the corner. 
 
 ## Controller Comparison Analysis
 
