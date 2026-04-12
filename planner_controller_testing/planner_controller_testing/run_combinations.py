@@ -39,7 +39,7 @@ def main()->None:
     navigator.waitUntilNav2Active()
 
     # begin navigating path combinations!
-    navigator.get_logger().info("Starting first combination: Dijkstra and RPP")
+    navigator.get_logger().info("Starting combo 1: Dijkstra and RPP")
     # navigator.goToPose does not support planner and controller parameters
     # Instead, getPath()/getPathThroughPoses() must be called first, followed by followPath(), as both support changing algorithms
     # See API here: https://docs.nav2.org/commander_api/index.html
@@ -52,15 +52,27 @@ def main()->None:
     
     result = navigator.getResult()
     if result == TaskResult.SUCCEEDED:
-        print('Goal succeeded!')
+        navigator.get_logger().info('Goal succeeded!')
     elif result == TaskResult.CANCELED:
-        print('Goal was canceled!')
+        navigator.get_logger().info('Goal was canceled!')
     elif result == TaskResult.FAILED:
-        print('Goal failed!')
+        navigator.get_logger().info('Goal failed!')
     else:
-        print('Goal has an invalid return status!')
+        navigator.get_logger().info('Goal has an invalid return status!')
+        
+    # trigger slight move so the next cycle can start without prematurely ending (not already in goal pose)
+    navigator.get_logger().info("Path following complete, manually adjusting for next run")
+    navigator.spin(spin_dist=3.14, time_allowance=15)
+    while not navigator.isTaskComplete():
+        pass
     
-    navigator.get_logger().info("Starting second combination: A* and RPP")
+    navigator.driveOnHeading(dist=0.25, speed=0.2, time_allowance=25)
+    while not navigator.isTaskComplete():
+        pass
+    
+    
+    # start combination 2, A* planner and RPP controller
+    navigator.get_logger().info("Starting combo 2: A* and RPP")
     path = navigator.getPathThroughPoses(waypoints[0], waypoints, planner_id='AStar')
     navigator.followPath(path, controller_id='RPP')
             
@@ -69,15 +81,26 @@ def main()->None:
     
     result = navigator.getResult()
     if result == TaskResult.SUCCEEDED:
-        print('Goal succeeded!')
+        navigator.get_logger().info('Goal succeeded!')
     elif result == TaskResult.CANCELED:
-        print('Goal was canceled!')
+        navigator.get_logger().info('Goal was canceled!')
     elif result == TaskResult.FAILED:
-        print('Goal failed!')
+        navigator.get_logger().info('Goal failed!')
     else:
-        print('Goal has an invalid return status!')
+        navigator.get_logger().info('Goal has an invalid return status!')
     
-    navigator.get_logger().info("Starting third combination: A* and DWB")
+     # trigger slight move so the next cycle can start without prematurely ending (not already in goal pose)
+    navigator.get_logger().info("Path following complete, manually adjusting for next run")
+    navigator.spin(spin_dist=3.14, time_allowance=15)
+    while not navigator.isTaskComplete():
+        pass
+    
+    navigator.driveOnHeading(dist=0.25, speed=0.2, time_allowance=25)
+    while not navigator.isTaskComplete():
+        pass
+    
+    # start combination 3, A* planner and DWB controller
+    navigator.get_logger().info("Starting combo 3: A* and DWB")
     path = navigator.getPathThroughPoses(waypoints[0], waypoints, planner_id='AStar')
     navigator.followPath(path, controller_id='DWB')
             
@@ -86,13 +109,13 @@ def main()->None:
     
     result = navigator.getResult()
     if result == TaskResult.SUCCEEDED:
-        print('Goal succeeded!')
+        navigator.get_logger().info('Goal succeeded!')
     elif result == TaskResult.CANCELED:
-        print('Goal was canceled!')
+        navigator.get_logger().info('Goal was canceled!')
     elif result == TaskResult.FAILED:
-        print('Goal failed!')
+        navigator.get_logger().info('Goal failed!')
     else:
-        print('Goal has an invalid return status!')
+        navigator.get_logger().info('Goal has an invalid return status!')
    
     navigator.get_logger().info("All combinations ended, Node Terminating...")
 

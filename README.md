@@ -29,6 +29,8 @@ The route begins in a corner of EERC 722 and moves toward the lab tables, which 
 
 ![Annotated route map with waypoints](figures/waypoints.png)
 
+Figure 1: Annotated route map with waypoints
+
 ## Start and Goal Poses
 
 The route is a loop — the robot visits all 6 waypoints in order and returns to waypoint 0. Waypoints are stored in [`config/waypoints.yaml`](./config/waypoints.yaml).
@@ -48,6 +50,14 @@ The route is a loop — the robot visits all 6 waypoints in order and returns to
 ## 2a. Planner Comparison (Dijkstra vs. A\*)
 
 -
+
+![Dijkstra](./figures/plan_dijkstra.png)
+
+Figure 2: Dijkstra planned route overlaid on costmap
+
+![A*](./figures/plan_astar.png)
+
+Figure 3: A* planned route overlaid on costmap
 
 ## 2b. Controller Comparison (RPP vs. DWB)
 
