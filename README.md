@@ -8,9 +8,9 @@ This project compares the Dijkstra and A* path planners in the Nav2 package, as 
 
 This project is completed and tested in ROS2 Jazzy Jalisco on an Ubuntu 24.04 Noble Numbat PC.
 
-Each Turtlebot3 in EERC 722 is assigned a static IP on a lab managed wireless router. Our group used Turtlebot Tomato, which is assigned local IP address 32.80.100.107 and `ROS_DOMAIN_ID=7`.
+Each Turtlebot3 in EERC 722 is assigned a static IP on a lab-managed wireless router. Our group used Turtlebot Tomato, which is assigned a local IP address 32.80.100.107 and `ROS_DOMAIN_ID=7`.
 
-The testing environment is setup on a local PC by exporting the following parameter flags:
+The testing environment is set up on a local PC by exporting the following parameter flags:
 ```bash
 $ export ROS_DOMAIN_ID=7
 $ export TURTLEBOT3_MODEL=burger
@@ -22,7 +22,9 @@ The Turtlebot3 modified Nav2 parameters are located here: [`/config/nav2_params.
 ## Issues Encountered + Solutions
 During development of this assignment, we learned that in order to control which path planner and controller Nav2 uses, we cannot use the common Nav2 Commander API commands such as `goToPose()`, `goThroughPoses()`, `followWaypoints()`.  
 
-To allow our script in Part 2 to execute all three combinations programatically, one after another, we leveraged the `getPathThroughPoses()` to plan a path with the specific controller, then fed the resulting path into the `followPath()` command, specifying the specific controller.
+To allow our script in Part 2 to execute all three combinations programmatically, one after another, we leveraged the `getPathThroughPoses()` to plan a path with the specific controller, then fed the resulting path into the `followPath()` command, specifying the specific controller.
+
+Furthermore, the Nav2 commander exhibited interesting behavior when cycling to the next planner and controller combination.  Specifically, when the goal waypoint was met, the next cycle would trigger with a different planner and controller.  However, since the robot was already at the goal pose, Nav2 would indicate that as a successful completion and terminate prematurely.  This was resolved by using the Nav2 `spin()` and `driveOnHeading()` functions to rotate the robot 180 degrees, facing the room, then driving forward 25 cm before replanning.  This distance placed the robot outside of the goal acceptance region and allowed the robot to proceed on the next planned path around the lab.
 
 # Part 1 - Route Design
 
@@ -180,7 +182,7 @@ navigator.followPath(path, controller_id='DWB')
 
 **Ian Mattson**
 
-- Google Gemini was used to help generate the syntax to configure a ROS node to access the a parameter file in the repo's `/config` directory outside the ROS 2 package, using the prompt:
+- Google Gemini was used to help generate the syntax to configure a ROS node to access a parameter file in the repo's `/config` directory outside the ROS 2 package, using the prompt:
 
   " How to setup a ros2 python node to access parameters in a given directory outside the ros2 package "
 
