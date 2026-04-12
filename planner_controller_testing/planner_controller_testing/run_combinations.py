@@ -7,29 +7,10 @@ from ament_index_python.packages import get_package_share_directory
 import yaml
 import os
 
-lastPose = None
-
-def amcl_cb(msg):
-    lastPose = msg
-
-def drift(amcl : PoseWithCovarianceStamped, waypoint : PoseStamped):
-    if lastPose is None:
-        return -1.0, -1.0
-    x_drift = abs(amcl.pose.pose.position.x - waypoint.pose.position.x)
-    y_drift = abs(amcl.pose.pose.position.y - waypoint.pose.position.y)
-    return x_drift, y_drift
-
 def main()->None:
 
     rclpy.init()
     navigator = BasicNavigator()
-
-    amcl_sub = navigator.create_subscription(
-            PoseWithCovarianceStamped,
-            '/amcl_pose',
-            amcl_cb,
-            10)
-
 
     # load waypoint file directory from setup file
     pkg_share = get_package_share_directory('planner_controller_testing')
@@ -52,42 +33,90 @@ def main()->None:
         pose.pose.orientation.z = points[pt]['orientation'][0]
         pose.pose.orientation.w = points[pt]['orientation'][3]
         waypoints.append(pose)
-
-    #print(waypoints)
-    
-    # planner and controller combinations
-    planner_combos = ['Dijkstra', 'AStar', 'AStar']
-    controller_combos = ['RPP', 'RPP', 'DWB']
-    num_combinations = len(planner_combos)
     
     # Wait for the navigation stack to be ready
     navigator.get_logger().info("Waiting for Nav2 stack...")
-    navigator.waitUntilNav2Active(localizer="slam_toolbox")
-    
-    
-    # cycle through all combinations
-    for i in range(num_combinations):
+    navigator.waitUntilNav2Active()
 
-        # use nav.goThroughPoses in lieu of nav.goToPose since our route is a series of poses
-        navigator.followWaypoints(waypoints, planner_id=planner_combos[i], controller_id=controller_combos[i]) 
-        
-        while not navigator.isTaskComplete():
-            feedback = navigator.getFeedback()
-            navigator.get_logger().info("Navigating to waypoint {feedback.current_waypoint}")
+    # begin navigating path combinations!
+    navigator.get_logger().info("Starting combo 1: Dijkstra and RPP")
+    # navigator.goToPose does not support planner and controller parameters
+    # Instead, getPath()/getPathThroughPoses() must be called first, followed by followPath(), as both support changing algorithms
+    # See API here: https://docs.nav2.org/commander_api/index.html
+   
+    path = navigator.getPathThroughPoses(waypoints[0], waypoints, planner_id='Dijkstra')
+    navigator.followPath(path, controller_id='RPP')
             
-        result = navigator.getResult()
-        if result == TaskResult.SUCCEEDED:
-            navigator.get_logger().info(f'Goal succeeded using {planner_combos[i]} planner and {controller_combos[i]} controller')
-            # Calculate drift
-            x, y = drift(lastPose, waypoints[4])
-            navigator.get_logger().info(f"Dift accumulated x: {x}, y: {y}")
-        elif result == TaskResult.CANCELED:
-            navigator.get_logger().info('Goal was canceled!')
-        elif result == TaskResult.FAILED:
-            (error_code, error_msg) = navigator.getTaskError()
-            navigator.get_logger().error('Goal failed!{error_code}:{error_msg}')
-        else:
-            navigator.get_logger().error('Goal has an invalid return status!')
+    while not navigator.isTaskComplete():
+        pass
+    
+    result = navigator.getResult()
+    if result == TaskResult.SUCCEEDED:
+        navigator.get_logger().info('Goal succeeded!')
+    elif result == TaskResult.CANCELED:
+        navigator.get_logger().info('Goal was canceled!')
+    elif result == TaskResult.FAILED:
+        navigator.get_logger().info('Goal failed!')
+    else:
+        navigator.get_logger().info('Goal has an invalid return status!')
         
+    # trigger slight move so the next cycle can start without prematurely ending (not already in goal pose)
+    navigator.get_logger().info("Path following complete, manually adjusting for next run")
+    navigator.spin(spin_dist=3.14, time_allowance=15)
+    while not navigator.isTaskComplete():
+        pass
+    
+    navigator.driveOnHeading(dist=0.25, speed=0.2, time_allowance=25)
+    while not navigator.isTaskComplete():
+        pass
+    
+    
+    # start combination 2, A* planner and RPP controller
+    navigator.get_logger().info("Starting combo 2: A* and RPP")
+    path = navigator.getPathThroughPoses(waypoints[0], waypoints, planner_id='AStar')
+    navigator.followPath(path, controller_id='RPP')
+            
+    while not navigator.isTaskComplete():
+        pass
+    
+    result = navigator.getResult()
+    if result == TaskResult.SUCCEEDED:
+        navigator.get_logger().info('Goal succeeded!')
+    elif result == TaskResult.CANCELED:
+        navigator.get_logger().info('Goal was canceled!')
+    elif result == TaskResult.FAILED:
+        navigator.get_logger().info('Goal failed!')
+    else:
+        navigator.get_logger().info('Goal has an invalid return status!')
+    
+     # trigger slight move so the next cycle can start without prematurely ending (not already in goal pose)
+    navigator.get_logger().info("Path following complete, manually adjusting for next run")
+    navigator.spin(spin_dist=3.14, time_allowance=15)
+    while not navigator.isTaskComplete():
+        pass
+    
+    navigator.driveOnHeading(dist=0.25, speed=0.2, time_allowance=25)
+    while not navigator.isTaskComplete():
+        pass
+    
+    # start combination 3, A* planner and DWB controller
+    navigator.get_logger().info("Starting combo 3: A* and DWB")
+    path = navigator.getPathThroughPoses(waypoints[0], waypoints, planner_id='AStar')
+    navigator.followPath(path, controller_id='DWB')
+            
+    while not navigator.isTaskComplete():
+        pass
+    
+    result = navigator.getResult()
+    if result == TaskResult.SUCCEEDED:
+        navigator.get_logger().info('Goal succeeded!')
+    elif result == TaskResult.CANCELED:
+        navigator.get_logger().info('Goal was canceled!')
+    elif result == TaskResult.FAILED:
+        navigator.get_logger().info('Goal failed!')
+    else:
+        navigator.get_logger().info('Goal has an invalid return status!')
+   
+    navigator.get_logger().info("All combinations ended, Node Terminating...")
 
     navigator.lifecycleShutdown()
