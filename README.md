@@ -1,10 +1,10 @@
 # Project 9: Path Planning and Following
-Reid Beckes, Jackson Newell, Ian Mattson, and Anders Smitterberg
+Reid Beckes, Ian Mattson, Jackson Newell, and Anders Smitterberg
 
 
 # Introduction + Setup
 
--
+This project compares the Dijkstra and A* path planners in the Nav2 package, as well as the Regulated Pure Pursuit (RPP) and Dynamic Window controllers.
 
 This project is completed and tested in ROS2 Jazzy Jalisco on an Ubuntu 24.04 Noble Numbat PC.
 
@@ -18,6 +18,11 @@ $ export RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 ```
 
 The Turtlebot3 modified Nav2 parameters are located here: [`/config/nav2_params.yaml`](./config/nav2_params.yaml). Further instructions on launching the Turtlebot3 Nav2 node are in the Usage Instructions section.
+
+## Issues Encountered + Solutions
+During development of this assignment, we learned that in order to control which path planner and controller Nav2 uses, we cannot use the common Nav2 Commander API commands such as `goToPose()`, `goThroughPoses()`, `followWaypoints()`.  
+
+To allow our script in Part 2 to execute all three combinations programatically, one after another, we leveraged the `getPathThroughPoses()` to plan a path with the specific controller, then fed the resulting path into the `followPath()` command, specifying the specific controller.
 
 # Part 1 - Route Design
 
@@ -145,22 +150,31 @@ Once Nav2 is up, use RViz2's **2D Pose Estimate** to initialize AMCL before send
 $ ros2 launch planner_controller_testing run_combinations.launch.xml
 ```
 
-### Selecting a specific planner and controller combination at runtime
+## Selecting a specific planner and controller combination at runtime
 
-- __NEED TO MODIFY SCRIPT FOR THIS? ASSIGNMENT WANTS AUTO EXECUTION OF EACH PERMUTATION, NOT USER SELECTION.  READDRESS THIS SECTION LATER @IQM !!__
+There are two ways the planner and controller can be selected for use in Nav2:
 
+### In Rviz:
+
+Once Nav2 is launched, there is a algorthim selector in the RViz config where the DWB / RPP controllers can be selected, as well as the A* / Dijkstra planner.
+
+![rviz_selector](./figures/rviz_selector.png)
+
+Figure 4: RViz Algorithm Selector
+
+### In `run_combinations.py`:
+
+The path planner and controller are selected by specifiying a valid, configured planner and controller as parameters to the `getPathThroughPoses()` function and the `followPath()` function, respectively.  An example of selecting A* and DWB is shown below:
+
+```python
+path = navigator.getPathThroughPoses(waypoints[0], waypoints, planner_id='AStar')
+
+navigator.followPath(path, controller_id='DWB')
+```
 
 # AI Disclosure
 
-**Anders Smitterberg**
-
--
-
 **Reid Beckes**
-
--
-
-**Jackson Newell**
 
 -
 
@@ -171,3 +185,13 @@ $ ros2 launch planner_controller_testing run_combinations.launch.xml
   " How to setup a ros2 python node to access parameters in a given directory outside the ros2 package "
 
   The output was tuned to include our group's specific package name, [`waypoints.yaml`](./config/waypoints.yaml) and needed to be modified such that it accessed the file outside of the ROS package that used it, per the assignment directory structure.  This was tested and verified to work with minimal modification by testing the node and checking waypoints were properly loaded.
+
+
+**Jackson Newell**
+
+-
+
+**Anders Smitterberg**
+
+-
+
