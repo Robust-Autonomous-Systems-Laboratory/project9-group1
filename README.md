@@ -198,5 +198,4 @@ navigator.followPath(path, controller_id='DWB')
 
 **Anders Smitterberg**
 
--
-
+- Anthropic Claude was used to assist in the formatting of the README for parts 1 and 2. I uploaded my typed readme verbatim and asked Claude to check the grammar spelling and clarity. I then asked Claude to assist in the formatting of the sections, and the creation of the waypoints table. The work was verified by me by going over the entire readme again to ensure correctness and correct tone throughout. Anthropic Claude was used to verify the implementation of Part 2 by pointing claude code to the nav2_params file and asking it to verify against the Nav2 documentation using the Context7 MCP server. There were a few fixes identified including spelling and such, which were easy for me to verify. I verified that the Nav2 stack loaded and the pluging were selectable after claude's editing. I do not have the verbatim prompts, as I do not know how to recover them from claude code sessions that have been closed, they don't appear in the history in the web interface anywhere so I cannot pull them. Hopefuly the above description is specific enough, if necessary i can look further into how to find the history for claude code sessions.
