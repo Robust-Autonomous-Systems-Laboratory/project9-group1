@@ -98,11 +98,11 @@ For the experiment the group carried out, the straight line heuristic was inform
 
 **Describe one moment where RPP and DWB produced observably different behavior.**
 
--
+The most obvious point where the controllers visibly differed was the travel towards the 3rd waypoint. RPP was able to navigate to the waypoint without issue. However, DWB was unable to navigate to the point. The exact behavior would differ between runs and parameters. Some runs the controller would simply fail and others the Turtlebot would travel in circles unable to ever reach the waypoint. Because DWA can only accept circular trajectories, it is unable to find a trajectory that can navigate the narrow path to get to waypoint 3.
 
 **Was `lookahead_dist: 0.4 m` a good choice for your route?**
 
--
+The lookahead distance works okay for this route. The DWA was unable to navigate the path but this was due to the path shape. A higher lookahead distance would increase trajectory errors and make the DWA results worse most likely. The turtlebot did not experience any oscillations so the lookadahead distance was not too small. 
 
 
 # Usage Instructions
@@ -181,7 +181,7 @@ navigator.followPath(path, controller_id='DWB')
 
 **Reid Beckes**
 
--
+- Reid did not use any AI for this assignment
 
 **Ian Mattson**
 
