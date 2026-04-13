@@ -194,7 +194,7 @@ navigator.followPath(path, controller_id='DWB')
 
 **Jackson Newell**
 
--
+- Jackson did not use any AI for this assignment
 
 **Anders Smitterberg**
 
